@@ -20,14 +20,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # 安装红外仿真系统核心依赖：
-        # numpy & scipy: 用于热平衡方程迭代、普朗克积分和海面波形计算
-        # pandas: 用于大气数据 LUT 查找表处理
-        # PyQt6: 用于系统 GUI 交互界面
         pip install numpy scipy pandas PyQt6 pyinstaller cryptography
 
     - name: Build EXE with PyInstaller
       run: |
+        # 移除 --add-data，因为这些目录目前可能只包含 .py 文件
+        # PyInstaller 会通过 --collect-submodules 自动处理包导入
         pyinstaller --noconsole --onefile `
         --collect-submodules core `
         --collect-submodules environment `
@@ -41,9 +39,6 @@ jobs:
         --hidden-import "environment.ocean_physics" `
         --hidden-import "sensor.ir_camera_model" `
         --hidden-import "sensor.post_processing" `
-        --add-data "core;core" `
-        --add-data "environment;environment" `
-        --add-data "sensor;sensor" `
         --name "IR_Simulation_Engine_v1.0" `
         main.py
 
