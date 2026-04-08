@@ -21,3 +21,4 @@ class TrainingSimulator(QThread):
             if epoch > 70: status = "优化手术决策权重算法..."
             
             self.update_signal.emit(epoch, loss, acc, status)
+            

@@ -1,4 +1,4 @@
-name: Build IR Scene Simulation Platform
+name: Build AI Data Analysis Platform
 
 on:
   push:
@@ -20,31 +20,24 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy scipy pandas PyQt6 pyinstaller cryptography
+        # 核心修正：安装 PySide6 以及 AI 影像处理常用的库
+        pip install PySide6 numpy scipy pandas pyinstaller cryptography opencv-python matplotlib
 
     - name: Build EXE with PyInstaller
       run: |
-        # 移除 --add-data，因为这些目录目前可能只包含 .py 文件
-        # PyInstaller 会通过 --collect-submodules 自动处理包导入
+        # 使用 pyinstaller 打包
+        # --hidden-import 确保 PySide6 的核心组件被强制包含
         pyinstaller --noconsole --onefile `
-        --collect-submodules core `
-        --collect-submodules environment `
-        --collect-submodules sensor `
-        --hidden-import "core.physics_constants" `
-        --hidden-import "core.thermal_dynamics" `
-        --hidden-import "core.material_database" `
-        --hidden-import "environment.celestial_mechanics" `
-        --hidden-import "environment.atmospheric_model" `
-        --hidden-import "environment.terrain_engine" `
-        --hidden-import "environment.ocean_physics" `
-        --hidden-import "sensor.ir_camera_model" `
-        --hidden-import "sensor.post_processing" `
-        --name "IR_Simulation_Engine_v1.0" `
+        --hidden-import "PySide6" `
+        --hidden-import "PySide6.QtCore" `
+        --hidden-import "PySide6.QtGui" `
+        --hidden-import "PySide6.QtWidgets" `
+        --name "AI_Data_Analysis_Platform_v1.5" `
         main.py
 
     - name: Upload Executable Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: IR-Simulation-System-Package
-        path: dist/IR_Simulation_Engine_v1.0.exe
+        name: AI-Platform-EXE
+        path: dist/AI_Data_Analysis_Platform_v1.5.exe
         retention-days: 5
