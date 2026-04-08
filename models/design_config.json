@@ -1,0 +1,14 @@
+{
+    "version": "1.5.0",
+    "backbone": "ResNet-50",
+    "hyperparameters": {
+        "lr": 0.001,
+        "optimizer": "AdamW (推荐)",
+        "resolution": "224"
+    },
+    "classes": [
+        "liangxing",
+        "exing",
+        "quezhenexing"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "backbone": "ResNet-50 (\u4e34\u5e8a\u9ad8\u7cbe\u5ea6)",
+    "input_resolution": "384x384 (\u7cbe\u7ec6\u8bc6\u522b)",
+    "classes": [
+        "liangxing",
+        "exing",
+        "quezhenexing"
+    ],
+    "hyper_params": {
+        "dropout": 0.5,
+        "loss": "FocalLoss (\u9488\u5bf9\u96be\u6837\u672c\u4f18\u5316)",
+        "optimizer": "SGD (\u5e26\u52a8\u91cf)"
+    }
+}
