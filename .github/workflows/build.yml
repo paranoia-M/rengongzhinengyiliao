@@ -20,24 +20,24 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # 核心修正：安装 PySide6 以及 AI 影像处理常用的库
-        pip install PySide6 numpy scipy pandas pyinstaller cryptography opencv-python matplotlib
+        # 添加了 pyqtgraph 以及可能用到的 Web 引擎组件
+        pip install PySide6 pyqtgraph numpy scipy pandas pyinstaller cryptography opencv-python matplotlib
 
     - name: Build EXE with PyInstaller
       run: |
-        # 使用 pyinstaller 打包
-        # --hidden-import 确保 PySide6 的核心组件被强制包含
+        # 显式包含 pyqtgraph 和核心 GUI 模块
         pyinstaller --noconsole --onefile `
-        --hidden-import "PySide6" `
+        --hidden-import "pyqtgraph" `
         --hidden-import "PySide6.QtCore" `
         --hidden-import "PySide6.QtGui" `
         --hidden-import "PySide6.QtWidgets" `
-        --name "AI_Data_Analysis_Platform_v1.5" `
+        --hidden-import "PySide6.QtWebEngineWidgets" `
+        --name "AI_Platform_v1.5.1" `
         main.py
 
     - name: Upload Executable Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AI-Platform-EXE
-        path: dist/AI_Data_Analysis_Platform_v1.5.exe
+        path: dist/AI_Platform_v1.5.1.exe
         retention-days: 5
