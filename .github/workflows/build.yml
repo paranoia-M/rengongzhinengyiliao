@@ -1,0 +1,55 @@
+name: Build IR Scene Simulation Platform
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # 安装红外仿真系统核心依赖：
+        # numpy & scipy: 用于热平衡方程迭代、普朗克积分和海面波形计算
+        # pandas: 用于大气数据 LUT 查找表处理
+        # PyQt6: 用于系统 GUI 交互界面
+        pip install numpy scipy pandas PyQt6 pyinstaller cryptography
+
+    - name: Build EXE with PyInstaller
+      run: |
+        pyinstaller --noconsole --onefile `
+        --collect-submodules core `
+        --collect-submodules environment `
+        --collect-submodules sensor `
+        --hidden-import "core.physics_constants" `
+        --hidden-import "core.thermal_dynamics" `
+        --hidden-import "core.material_database" `
+        --hidden-import "environment.celestial_mechanics" `
+        --hidden-import "environment.atmospheric_model" `
+        --hidden-import "environment.terrain_engine" `
+        --hidden-import "environment.ocean_physics" `
+        --hidden-import "sensor.ir_camera_model" `
+        --hidden-import "sensor.post_processing" `
+        --add-data "core;core" `
+        --add-data "environment;environment" `
+        --add-data "sensor;sensor" `
+        --name "IR_Simulation_Engine_v1.0" `
+        main.py
+
+    - name: Upload Executable Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: IR-Simulation-System-Package
+        path: dist/IR_Simulation_Engine_v1.0.exe
+        retention-days: 5
