@@ -1,4 +1,4 @@
-name: Build AI Data Analysis Platform
+name: Build IR Simulation Win-Standalone
 
 on:
   push:
@@ -20,24 +20,36 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # 添加了 pyqtgraph 以及可能用到的 Web 引擎组件
-        pip install PySide6 pyqtgraph numpy scipy pandas pyinstaller cryptography opencv-python matplotlib
+        # 必须安装的科学计算与界面库
+        pip install numpy scipy pandas PyQt6 pyinstaller
 
     - name: Build EXE with PyInstaller
       run: |
-        # 显式包含 pyqtgraph 和核心 GUI 模块
-        pyinstaller --noconsole --onefile `
-        --hidden-import "pyqtgraph" `
-        --hidden-import "PySide6.QtCore" `
-        --hidden-import "PySide6.QtGui" `
-        --hidden-import "PySide6.QtWidgets" `
-        --hidden-import "PySide6.QtWebEngineWidgets" `
-        --name "AI_Platform_v1.5.1" `
+        # 核心逻辑：
+        # 1. --onefile: 只有一个 EXE，方便在 Windows 发给别人直接运行
+        # 2. --noconsole: 运行时不显示 CMD 黑色窗口
+        # 3. --collect-all: 这是重点！确保 scipy 的物理常数和算法能打包进 Win 环境
+        # 4. --clean: 每次构建前清理缓存，防止旧文件干扰
+        pyinstaller --noconsole --onefile --clean `
+        --collect-all scipy `
+        --collect-submodules core `
+        --collect-submodules environment `
+        --collect-submodules sensor `
+        --hidden-import "core.physics_constants" `
+        --hidden-import "core.thermal_dynamics" `
+        --hidden-import "core.material_database" `
+        --hidden-import "environment.celestial_mechanics" `
+        --hidden-import "environment.atmospheric_model" `
+        --hidden-import "environment.terrain_engine" `
+        --hidden-import "environment.ocean_physics" `
+        --hidden-import "sensor.ir_camera_model" `
+        --hidden-import "sensor.post_processing" `
+        --name "IR_Simulation_System_Windows" `
         main.py
 
     - name: Upload Executable Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AI-Platform-EXE
-        path: dist/AI_Platform_v1.5.1.exe
+        name: IR-Simulation-System-Windows
+        path: dist/IR_Simulation_System_Windows.exe
         retention-days: 5
